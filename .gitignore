@@ -1,0 +1,12 @@
+.env
+./env
+./envs
+./envs/
+./envs/
+./envs/./
+./envs/././
+./envs/./././
+./envs/././././
+.DS_Store
+main.cpython-311.pyc
+models.cpython-311.pyc

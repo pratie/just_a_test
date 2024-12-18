@@ -1,0 +1,10 @@
+sqlalchemy 
+psycopg2-binary
+python-dotenv
+praw
+python-dotenv
+anthropic
+prawcore
+requests
+beautifulsoup4
+Pillow
