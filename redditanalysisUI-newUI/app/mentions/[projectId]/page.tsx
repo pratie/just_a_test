@@ -156,6 +156,55 @@ export default function MentionsPage() {
     }
   };
 
+  const exportToCSV = () => {
+    try {
+      // Define CSV headers
+      const headers = [
+        'Title',
+        'URL',
+        'Author',
+        'Subreddit',
+        'Created At',
+        'Score',
+        'Comments',
+        'Relevance Score',
+        'Matching Keywords'
+      ].join(',');
+
+      // Convert mentions to CSV rows
+      const rows = mentions.map(mention => {
+        return [
+          `"${mention.title?.replace(/"/g, '""') || ''}"`,
+          `"${mention.url || ''}"`,
+          `"${mention.author || ''}"`,
+          `"${mention.subreddit || ''}"`,
+          new Date(mention.created_at).toLocaleString(),
+          mention.score,
+          mention.num_comments,
+          mention.relevance_score,
+          `"${Array.isArray(mention.matching_keywords) ? mention.matching_keywords.join(', ') : ''}"`,
+        ].join(',');
+      });
+
+      // Combine headers and rows
+      const csvContent = [headers, ...rows].join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `reddit_mentions_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('CSV exported successfully');
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      toast.error('Failed to export CSV');
+    }
+  };
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -193,6 +242,28 @@ export default function MentionsPage() {
             <h1 className="text-3xl font-medium">Mentions</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={exportToCSV}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export CSV
+            </Button>
             <Button
               onClick={refreshMentions}
               disabled={isLoading}
